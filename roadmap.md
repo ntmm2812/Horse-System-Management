@@ -7,4 +7,4 @@
 - [x] Hồ sơ chủ ngựa và lịch sử thi đấu
 - [x] Tài chính, nhân sự, vật tư và nhật ký CLB
 - [x] Ảnh ngựa đua, giao diện responsive và animation
-- [ ] Xác minh bản xem trước desktop/mobile
+- [x] Xác minh bản xem trước desktop/mobile
