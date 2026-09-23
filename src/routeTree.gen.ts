@@ -10,33 +10,102 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GroomRouteImport } from './routes/groom'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ManagerRouteImport } from './routes/manager'
+import { Route as OwnerRouteImport } from './routes/owner'
+import { Route as TrainerRouteImport } from './routes/trainer'
+import { Route as VetRouteImport } from './routes/vet'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GroomRoute = GroomRouteImport.update({
+  id: '/groom',
+  path: '/groom',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManagerRoute = ManagerRouteImport.update({
+  id: '/manager',
+  path: '/manager',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OwnerRoute = OwnerRouteImport.update({
+  id: '/owner',
+  path: '/owner',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrainerRoute = TrainerRouteImport.update({
+  id: '/trainer',
+  path: '/trainer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VetRoute = VetRouteImport.update({
+  id: '/vet',
+  path: '/vet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/groom': typeof GroomRoute
+  '/login': typeof LoginRoute
+  '/manager': typeof ManagerRoute
+  '/owner': typeof OwnerRoute
+  '/trainer': typeof TrainerRoute
+  '/vet': typeof VetRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/groom': typeof GroomRoute
+  '/login': typeof LoginRoute
+  '/manager': typeof ManagerRoute
+  '/owner': typeof OwnerRoute
+  '/trainer': typeof TrainerRoute
+  '/vet': typeof VetRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/groom': typeof GroomRoute
+  '/login': typeof LoginRoute
+  '/manager': typeof ManagerRoute
+  '/owner': typeof OwnerRoute
+  '/trainer': typeof TrainerRoute
+  '/vet': typeof VetRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    '/' | '/groom' | '/login' | '/manager' | '/owner' | '/trainer' | '/vet'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/groom' | '/login' | '/manager' | '/owner' | '/trainer' | '/vet'
+  id:
+    | '__root__'
+    | '/'
+    | '/groom'
+    | '/login'
+    | '/manager'
+    | '/owner'
+    | '/trainer'
+    | '/vet'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GroomRoute: typeof GroomRoute
+  LoginRoute: typeof LoginRoute
+  ManagerRoute: typeof ManagerRoute
+  OwnerRoute: typeof OwnerRoute
+  TrainerRoute: typeof TrainerRoute
+  VetRoute: typeof VetRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +117,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/groom': {
+      id: '/groom'
+      path: '/groom'
+      fullPath: '/groom'
+      preLoaderRoute: typeof GroomRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/manager': {
+      id: '/manager'
+      path: '/manager'
+      fullPath: '/manager'
+      preLoaderRoute: typeof ManagerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/owner': {
+      id: '/owner'
+      path: '/owner'
+      fullPath: '/owner'
+      preLoaderRoute: typeof OwnerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trainer': {
+      id: '/trainer'
+      path: '/trainer'
+      fullPath: '/trainer'
+      preLoaderRoute: typeof TrainerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vet': {
+      id: '/vet'
+      path: '/vet'
+      fullPath: '/vet'
+      preLoaderRoute: typeof VetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GroomRoute: GroomRoute,
+  LoginRoute: LoginRoute,
+  ManagerRoute: ManagerRoute,
+  OwnerRoute: OwnerRoute,
+  TrainerRoute: TrainerRoute,
+  VetRoute: VetRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,106 +1,86 @@
-# Đường Đua Số
+# Mã Phong — Race Stable Hub
+### Hệ thống Quản lý Huấn luyện & Chăm sóc Ngựa đua Chuyên nghiệp
 
-Act as an expert Frontend Developer and UI/UX Designer. Create a responsive web dashboard for a "Racehorse Training & Management System" (Hệ thống Quản lý Huấn luyện Ngựa đua). 
+Hệ thống quản lý toàn diện dành cho trường đua và câu lạc bộ ngựa đua, cung cấp không gian làm việc chuyên biệt cho từng vai trò: **Huấn luyện viên trưởng**, **Bác sĩ thú y**, **Nhân viên chuồng**, **Chủ ngựa** và **Ban quản lý**.
 
-TECH STACK: 
+---
 
-- React, JavaScript (JSX), Tailwind CSS.
+## 🌟 Tính năng Nổi bật
 
-- Use Lucide React for icons.
+### 1. 🏇 Huấn luyện viên trưởng (Head Trainer)
+- **Bảng Dashboard phong độ**: Theo dõi chỉ số thể lực, tiến độ qua từng ngày tập luyện với biểu đồ trực quan.
+- **Lịch tập luyện chuyên sâu**: Quản lý cự ly, cường độ và tình trạng mặt sân (cỏ, cát).
+- **Cảnh báo Real-time**: Giám sát nhịp tim và vận tốc vượt ngưỡng an toàn.
+- **Đánh giá phong độ**: Chấm điểm và ghi chú chi tiết sau mỗi buổi tập.
 
-- Use Recharts for charts and graphs.
+### 2. 🩺 Bác sĩ Thú y (Veterinarian)
+- **Sơ đồ chuồng trại**: Trực quan hóa trạng thái sức khỏe từng chiến mã (Khỏe mạnh, Cần theo dõi, Chấn thương).
+- **Khóa huấn luyện khẩn cấp**: Vô hiệu hóa lịch tập ngay lập tức đối với ngựa gặp chấn thương.
+- **Hồ sơ bệnh án & Tiêm chủng**: Ghi nhận phác đồ điều trị, lịch tiêm phòng và tẩy giun định kỳ.
 
-DESIGN SYSTEM & THEME:
+### 3. 🧹 Nhân viên Chuồng (Groom / Caretaker)
+- **Checklist công việc hằng ngày**: Quản lý lịch cho ăn, tắm rửa, vệ sinh chuồng trại.
+- **Khẩu phần dinh dưỡng**: Theo dõi định lượng cỏ khô, cám yến mạch, khoáng chất và điện giải.
+- **Báo cáo sự cố nhanh**: Gửi phản ánh tức thời khi ngựa có biểu hiện bất thường.
 
-- Primary Color: Saddle Brown (khoảng #8B4513) cho các nút bấm chính, thanh điều hướng, và các điểm nhấn.
+### 4. 🏆 Chủ Ngựa (Horse Owner)
+- **Hồ sơ & Phả hệ (Pedigree)**: Thông tin chi tiết về xuất xứ, dòng giống, thành tích.
+- **Lịch sử thi đấu & Tiền thưởng**: Thống kê kết quả các cúp đua, thứ hạng và giải thưởng.
+- **Chỉ số sẵn sàng**: Theo dõi độ bền, tốc độ và tâm lý ngựa đua trước giải đấu.
 
-- Secondary Color: Sienna (khoảng #A0522D) cho hover states, viền, hoặc các icon.
+### 5. 📊 Quản lý Câu lạc bộ (Club Management)
+- **Báo cáo tài chính**: Đối soát chi phí vận hành (dinh dưỡng, y tế, bảo trì) với doanh thu thi đấu.
+- **Phân quyền & Kiểm toán (Audit Logs)**: Nhật ký hoạt động chi tiết của toàn bộ nhân sự.
 
-- Background/Text: Màu trắng (#FFFFFF) cho background chính, card background, kết hợp với chữ màu tối (Dark Gray/Black) để đảm bảo độ tương phản.
+---
 
-- Visual Elements: BẮT BUỘC chèn thêm các hình ảnh/vector về ngựa (có thể dùng Unsplash placeholders với keyword "racehorse", "stable") ở background của trang đăng nhập, banner header, hoặc avatar mặc định của ngựa để người dùng hình dung ngay bối cảnh hệ thống.
+## Trang theo vai trò
 
-- Ngôn ngữ giao diện: 100% Tiếng Việt.
+| Vai trò | Đường dẫn | Nội dung chính |
+| --- | --- | --- |
+| HLV Trưởng | `/trainer` | Thể lực, cảnh báo và lịch huấn luyện |
+| Bác sĩ thú y | `/vet` | Sơ đồ chuồng và hồ sơ y tế |
+| Nhân viên chuồng | `/groom` | Công việc ca trực, dinh dưỡng và báo cáo sự cố |
+| Chủ ngựa | `/owner` | Hồ sơ, phả hệ, thành tích và sức khỏe |
+| Quản lý CLB | `/manager` | Tài chính, nhân sự, vật tư và nhật ký |
 
-LAYOUT STRUCTURE:
+Mỗi trang có menu nghiệp vụ riêng. `/` đưa người dùng tới trang tương ứng với vai trò đã đăng nhập; khách chưa đăng nhập được chuyển tới `/login`. Mở URL của vai trò khác sẽ chuyển về trang của tài khoản hiện tại. Muốn thử vai trò khác, đăng xuất ở menu tài khoản rồi chọn tài khoản mẫu tại `/login`.
 
-- Sidebar (Menu trái): Màu nền Saddle Brown, chữ trắng. Bao gồm các menu chuyển đổi giữa các Role (để demo): [HLV Trưởng], [Bác sĩ thú y], [Nhân viên chuồng], [Chủ ngựa], [Quản lý CLB].
+Đăng nhập hiện là bản demo lưu phiên trong `sessionStorage`; việc giới hạn trang nằm ở giao diện, chưa thay thế xác thực và phân quyền dữ liệu phía máy chủ/Supabase RLS.
 
-- Header: Thanh tìm kiếm, Icon thông báo (có chấm đỏ cảnh báo), Avatar người dùng.
+---
 
-- Main Content: Bố cục dạng Grid chứa các Card (bo góc, bóng đổ nhẹ).
+## 🛠 Tech Stack
 
-YÊU CẦU CHI TIẾT CÁC TRANG & TÍNH NĂNG (Tích hợp 3 luồng Must-have):
+- **Frontend**: [React 19](https://react.dev/), [TanStack Start](https://tanstack.com/start), [TanStack Router](https://tanstack.com/router)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/), [Lucide React Icons](https://lucide.dev/)
+- **Charts**: [Recharts](https://recharts.org/)
+- **State & Data**: [TanStack Query](https://tanstack.com/query)
+- **Backend & Database**: [Supabase](https://supabase.com/)
+- **Bundler**: [Vite 8](https://vitejs.dev/)
 
-1. Giao diện "HLV Trưởng" (Head Trainer View - Flow Huấn luyện):
+---
 
-- Bảng Dashboard: Hiển thị biểu đồ (Line chart) tiến độ và thể lực của các chiến mã.
+## 🚀 Cài đặt & Chạy ứng dụng
 
-- Lịch huấn luyện (Calendar/List): Card hiển thị lịch tập hôm nay, thông tin cự ly, mặt sân.
+1. **Cài đặt dependencies**:
+   ```bash
+   npm install
+   ```
 
-- Cảnh báo Real-time: Một panel hiển thị cảnh báo nhịp tim/vận tốc vượt ngưỡng (nháy màu đỏ).
+2. **Cấu hình biến môi trường**:
+   Tạo file `.env` từ `.env.example` (nếu cần kết nối Supabase):
+   ```env
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
+   ```
 
-- Modal đánh giá: Nút "Đánh giá phong độ" mở ra form nhập nhận xét và chấm điểm sau buổi tập.
+3. **Chạy máy chủ phát triển**:
+   ```bash
+   npm run dev
+   ```
 
-2. Giao diện "Bác sĩ Thú y" (Veterinarian View - Flow Y tế & Chấn thương):
-
-- Sơ đồ chuồng trại: Dạng lưới (Grid) hiển thị trạng thái từng con ngựa (Xanh: Khỏe, Vàng: Theo dõi, Đỏ: Chấn thương).
-
-- Nút Action Khẩn cấp: Nút "KHÓA HUẤN LUYỆN" màu đỏ nổi bật (Red-600) dùng để vô hiệu hóa lịch tập của ngựa đang chấn thương.
-
-- Hồ sơ y tế: Form cho phép chọn vị trí chấn thương trên danh sách/mô hình, cập nhật phác đồ điều trị và checklist tiêm phòng/tẩy giun.
-
-3. Giao diện "Nhân viên Chăm sóc" (Groom View - Flow Vận hành):
-
-- Todo List Hàng ngày: Danh sách checklist công việc (Cho ăn, Vệ sinh, Tắm rửa). Có checkbox để đánh dấu hoàn thành.
-
-- Khẩu phần ăn: Card hiển thị chi tiết lượng ngũ cốc, cỏ, vitamin cho con ngựa đang chọn.
-
-- Form Báo cáo sự cố: Form nhanh gồm Dropdown (Ngựa bỏ ăn, Sốt, Xước móng), ô text mô tả và nút "Upload hình ảnh".
-
-4. Giao diện "Chủ Ngựa" (Horse Owner View - Flow Quản lý Lý lịch):
-
-- Profile Ngựa (Pedigree): Một Card lớn thiết kế sang trọng, hiển thị hình ảnh chú ngựa đua, thông tin phả hệ, số tuổi, cân nặng.
-
-- Lịch sử thi đấu: Bảng (Table) thống kê các giải đã đua, thứ hạng, và tiền thưởng.
-
-- Trạng thái sức khỏe: Các thanh Progress bar hiển thị độ sẵn sàng, thể lực hiện tại (Read-only).
-
-5. Giao diện "Quản lý Câu lạc bộ" (Club Manager View):
-
-- Bảng điều khiển tài chính: Bar chart thể hiện chi phí vận hành (thức ăn, y tế) vs Doanh thu giải đấu.
-
-- Bảng quản lý nhân sự và vật tư: Bảng danh sách với các nút phân quyền (RBAC) và nhật ký thao tác (Audit Log).
-
-MỘT SỐ YÊU CẦU NÂNG CAO CHO UI:
-
-- Thiết kế mượt mà, có animation khi hover vào các Card ngựa.
-
-- Dữ liệu mock (giả lập) phải phong phú và mang đậm chất đua ngựa (VD: Tên ngựa: "Xích Thố", "Black Caviar"; Tên HLV: "Nguyễn Văn A").
-
-- Trình bày toàn bộ trong một ứng dụng, dùng state để chuyển đổi giữa các View của từng Role.
-
-Hãy generate bộ code hoàn chỉnh, đảm bảo giao diện đẹp, hiện đại, phối đúng tone màu Nâu - Trắng đã yêu cầu và mang lại cảm giác của một trường đua ngựa chuyên nghiệp.
-
-This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://race-stable-hub.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/e3046025-06f4-4556-b1ef-e033707ee03c).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
+4. **Build dự án**:
+   ```bash
+   npm run build
+   ```
