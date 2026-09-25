@@ -62,7 +62,33 @@ All packages are under `src/main/java/com/horsemanagement`.
 `src/test/java/com/horsemanagement` directory is reserved for future tests.
 Reserved directories contain only `.gitkeep` placeholders so Git preserves them.
 
-## Database setup is deferred
+## SQL Server database
+
+The SQL scripts and sample data are in [database](database/README.md), together
+with the ERD. They create `HorseManagement` with 20 tables, 25 foreign keys,
+and 950 sample rows. Club Manager corresponds to the `Admin` role.
+
+On a new database, run the files in SSMS in this order:
+
+```text
+database/00_create_database.sql
+database/01_schema.sql
+database/02_seed.sql
+database/03_verify.sql
+```
+
+Alternatively, from `BE/database`, run:
+
+```powershell
+sqlcmd -S '.\SQLEXPRESS' -E -C -b -f 65001 -i setup.sql
+```
+
+Use your own SQL Server instance name. The schema script requires no existing
+`dbo` tables, and the seed requires empty tables. Do not run both installation
+methods on the same populated database. Sample password fields are placeholders,
+not working login credentials. See the database README for each script's purpose.
+
+### Backend connection
 
 The JPA and SQL Server driver dependencies are present, but datasource
 auto-configuration is temporarily disabled through `spring.autoconfigure.exclude`.
@@ -70,7 +96,8 @@ This lets the application start without a database URL, username, or password.
 When SQL Server connection information is supplied later, remove that exclusion
 and configure the connection. Keep `spring.jpa.hibernate.ddl-auto=none` and
 `spring.sql.init.mode=never` to prevent automatic schema changes and SQL scripts.
-No database tables, entities, CRUD, authentication, JWT, or migrations are included.
+The SQL scripts are run manually; this backend scaffold does not yet include
+entities, CRUD, authentication, JWT, or automatic migrations.
 
 Dependencies are Spring Web, Spring Data JPA, Bean Validation, Microsoft SQL Server
 JDBC, Lombok, DevTools, and Spring Boot Test. Spring Boot manages their versions.
