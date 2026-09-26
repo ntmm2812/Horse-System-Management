@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: horse-club-be
+  datasource:
+    url: ${DB_URL:jdbc:sqlserver://localhost:1433;databaseName=HorseManagement;encrypt=true;trustServerCertificate=false}
+    username: ${DB_USERNAME:}
+    password: ${DB_PASSWORD:}
+    hikari:
+      maximum-pool-size: 10
+  sql:
+    init:
+      mode: never
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+server:
+  port: ${PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+app:
+  cors-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:3000}
+  token-hours: 8
+  upload-dir: ${UPLOAD_DIR:../storage/incidents}
+  bootstrap:
+    enabled: ${BOOTSTRAP_ENABLED:false}
+    email: ${BOOTSTRAP_EMAIL:}
+    password: ${BOOTSTRAP_PASSWORD:}

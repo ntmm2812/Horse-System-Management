@@ -1,0 +1,97 @@
+@baseUrl = http://localhost:8080
+@adminEmail = manager@example.com
+@adminPassword = DIEN_MAT_KHAU_BOOTSTRAP_CUA_BAN
+@groomEmail = groom.tung@example.com
+@groomPassword = DIEN_MAT_KHAU_GROOM_CUA_BAN
+# Danh mục use case: USE_CASES.md. File này chỉ gọi API đã có trong BE.
+# Trainer/Vet/Owner chưa có API nghiệp vụ; không dùng đường dẫn dự kiến để thử ở đây.
+
+### Đăng nhập Admin; chạy bằng REST Client hoặc chuyển yêu cầu sang Postman
+# @name loginAdmin
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{"email":"{{adminEmail}}","password":"{{adminPassword}}"}
+
+### Hồ sơ đăng nhập
+# Response giống trường user trong kết quả loginAdmin.
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### Hồ sơ ngựa
+GET {{baseUrl}}/api/manager/horses?page=0&size=20
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### Danh sách tài khoản chờ duyệt
+GET {{baseUrl}}/api/manager/users?status=PENDING
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### Chủ ngựa đang hoạt động để chọn ownerId khi tạo hồ sơ ngựa
+GET {{baseUrl}}/api/manager/users?role=Owner&status=ACTIVE&page=0&size=20
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### Lấy danh sách vai trò và ID trước khi tạo nhân sự
+GET {{baseUrl}}/api/manager/roles
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### Đặt mật khẩu cho Groom mẫu UserID 6 (kiểm tra lại ID trên database của bạn)
+PUT {{baseUrl}}/api/manager/users/6/password
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+Content-Type: application/json
+
+{"password":"{{groomPassword}}"}
+
+### Đăng nhập Groom
+# @name loginGroom
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{"email":"{{groomEmail}}","password":"{{groomPassword}}"}
+
+### Chuồng/ngựa được phân công trong ngày có dữ liệu seed
+GET {{baseUrl}}/api/groom/stables?date=2026-09-25
+Authorization: Bearer {{loginGroom.response.body.accessToken}}
+
+### Công việc chưa xong
+GET {{baseUrl}}/api/groom/tasks?date=2026-09-25&completed=false
+Authorization: Bearer {{loginGroom.response.body.accessToken}}
+
+### Hoàn thành TaskID 3 của Groom mẫu; chọn lại ID từ danh sách công việc
+POST {{baseUrl}}/api/groom/tasks/3/complete
+Authorization: Bearer {{loginGroom.response.body.accessToken}}
+
+### Khẩu phần của ngựa được giao
+GET {{baseUrl}}/api/groom/horses/3/feeding-plan?date=2026-09-25
+Authorization: Bearer {{loginGroom.response.body.accessToken}}
+
+### Báo sự cố của ngựa được giao
+# @name createIncident
+POST {{baseUrl}}/api/groom/incidents
+Authorization: Bearer {{loginGroom.response.body.accessToken}}
+Content-Type: application/json
+
+{"horseId":3,"incidentType":"Hỏng máng nước","description":"Cần thay máng nước ở chuồng.","date":"2026-09-25"}
+
+### Xem lại báo cáo vừa tạo; imageUrl là null khi chưa upload ảnh
+GET {{baseUrl}}/api/groom/incidents/{{createIncident.response.body.reportId}}
+Authorization: Bearer {{loginGroom.response.body.accessToken}}
+
+### Admin xem cùng báo cáo
+GET {{baseUrl}}/api/manager/incidents/{{createIncident.response.body.reportId}}
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### Theo dõi vật tư
+GET {{baseUrl}}/api/groom/supplies
+Authorization: Bearer {{loginGroom.response.body.accessToken}}
+
+### Hiệu suất
+GET {{baseUrl}}/api/manager/reports/performance?from=2026-09-01&to=2026-09-30
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### Thu/chi
+GET {{baseUrl}}/api/manager/reports/finance?from=2026-09-01&to=2026-09-30
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### Nhật ký thao tác
+GET {{baseUrl}}/api/manager/audit-logs?page=0&size=20
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}

@@ -1,7 +1,9 @@
 /target/
+/.tools/
+/.m2/
+/uploads/
+/.env
+/application-local.yml
 /.idea/
-/.vscode/
 *.iml
 *.log
-.env
-.env.*

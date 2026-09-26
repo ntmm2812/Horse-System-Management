@@ -1,11 +1,14 @@
-# Database quản lý ngựa — SQL Server
+﻿# Database quản lý ngựa — SQL Server
 
-Nguồn: [Horse_Management_ERD.drawio](Horse_Management_ERD.drawio), trang `ERD` (trang `Page-2` trống).
+Nguồn: `../Horse_Management_ERD.drawio`, trang `ERD` (trang `Page-2` trống).
 Database: **HorseManagement**. Có đủ **20 bảng**, dữ liệu mẫu trong tất cả các bảng,
 khóa chính, khóa ngoại, chỉ mục và ràng buộc kiểm tra dữ liệu.
 
-Club Manager trong use case dùng role **Admin**. Thư mục này chứa bộ SQL
-khởi tạo database và dữ liệu mẫu; phần kết nối backend được cấu hình riêng.
+Mã nguồn Spring Boot nằm trong [BE](../); tài liệu ở [README dự án](../../README.md).
+Khi dùng cho website, chạy thêm [migration backend](04_backend_extension.sql) sau bộ
+SQL gốc. **Club Manager dùng role Admin**, theo yêu cầu nghiệp vụ. Migration
+bổ sung trạng thái duyệt tài khoản, lưu trữ hồ sơ, token đăng nhập, dữ liệu thu/chi
+và quyền truy cập API; xem hướng dẫn backend để cấu hình và chạy.
 
 ## Chức năng của từng file SQL
 
@@ -15,7 +18,8 @@ khởi tạo database và dữ liệu mẫu; phần kết nối backend được
 | [01_schema.sql](01_schema.sql) | Tạo 20 bảng, khóa chính, 25 khóa ngoại, chỉ mục và các ràng buộc dữ liệu. | Chạy sau khi đã tạo database và chưa có bảng trong schema `dbo`. |
 | [02_seed.sql](02_seed.sql) | Chèn 950 bản ghi mẫu vào các bảng để phát triển và thử nghiệm website. | Chạy sau khi tạo bảng; tất cả các bảng phải trống. |
 | [03_verify.sql](03_verify.sql) | Kiểm tra bảng, số bản ghi và các ràng buộc sau khi nạp dữ liệu. | Chạy sau seed hoặc khi cần kiểm tra dữ liệu hiện tại. |
-| [setup.sql](setup.sql) | Gọi lần lượt bốn file trên để thực hiện toàn bộ quá trình cài đặt. | Dùng khi cài mới bằng `sqlcmd` hoặc SSMS có bật SQLCMD Mode. |
+| [04_backend_extension.sql](04_backend_extension.sql) | Bổ sung trạng thái tài khoản, quyền API, token đăng nhập, thu/chi và các cột backend cần dùng. | Chạy sau bộ SQL gốc để sử dụng backend Spring Boot; có thể chạy lại. |
+| [setup.sql](setup.sql) | Gọi lần lượt năm file `00`–`04` để cài dữ liệu gốc và backend. | Dùng khi cài mới bằng `sqlcmd` hoặc SSMS có bật SQLCMD Mode. |
 
 ### 00_create_database.sql — Tạo database
 
@@ -60,13 +64,22 @@ khởi tạo database và dữ liệu mẫu; phần kết nối backend được
   dự kiến chỉ dùng đối chiếu, script không báo lỗi chỉ vì số dòng khác bộ mẫu.
   Khi website đã thêm/xóa dữ liệu, tổng số bản ghi có thể khác 950.
 
-### setup.sql — Chạy toàn bộ quá trình
+### 04_backend_extension.sql — Bổ sung cho backend website
+
+- Club Manager dùng role `Admin` đã có; bổ sung các quyền API cho Admin và Groom.
+- Thêm trạng thái duyệt tài khoản, cờ lưu trữ ngựa/vật tư, version vật tư và mô tả sự cố.
+- Tạo bảng `ApiToken` phục vụ đăng nhập và `FinanceEntry` để lưu thu/chi.
+- Chạy sau các file `00` đến `03`; không xóa dữ liệu cũ và có thể chạy lại.
+- Sau extension có 22 bảng; số dòng không còn cố định ở 950 do có thêm quyền
+  và dữ liệu hoạt động. Xem [hướng dẫn backend](../../README.md) để cấu hình.
+
+### setup.sql — Cài database và phần bổ sung cho backend
 
 File này không chứa định nghĩa bảng hay dữ liệu riêng. Nó dùng lệnh `:r`
-để gọi các file theo thứ tự:
+để gọi năm file theo thứ tự, bao gồm `04_backend_extension.sql`:
 
 ```text
-00_create_database.sql → 01_schema.sql → 02_seed.sql → 03_verify.sql
+00_create_database.sql → 01_schema.sql → 02_seed.sql → 03_verify.sql → 04_backend_extension.sql
 ```
 
 Lệnh `:On Error exit` yêu cầu dừng khi gặp lỗi. Chạy từ thư mục `database`
@@ -81,7 +94,8 @@ database đã có dữ liệu.
 3. Mở và chạy toàn bộ `01_schema.sql` để tạo bảng.
 4. Chạy `02_seed.sql` để thêm toàn bộ 950 bản ghi mẫu trong một giao dịch.
 5. Chạy `03_verify.sql` để kiểm tra số bản ghi và các ràng buộc dữ liệu.
-6. Refresh **Databases → HorseManagement → Tables** trong Object Explorer.
+6. Chạy `04_backend_extension.sql` để bổ sung cấu trúc và quyền cho backend.
+7. Refresh **Databases → HorseManagement → Tables** trong Object Explorer.
 
 Các file đánh số chạy được trong SSMS bình thường, không cần SQLCMD Mode.
 Tài khoản cần quyền tạo database và tạo bảng/chèn dữ liệu trong database đó.

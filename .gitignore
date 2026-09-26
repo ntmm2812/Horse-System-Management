@@ -1,0 +1,17 @@
+**/target/
+**/node_modules/
+/storage/
+.env
+.env.*
+!.env.example
+application-local.yml
+application-local.properties
+.idea/
+.vscode/
+*.iml
+*.log
+*.mdf
+*.ldf
+*.bak
+.DS_Store
+Thumbs.db
