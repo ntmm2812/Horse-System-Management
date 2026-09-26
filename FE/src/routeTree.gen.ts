@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FormsRouteImport } from './routes/forms'
 import { Route as GroomRouteImport } from './routes/groom'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ManagerRouteImport } from './routes/manager'
@@ -20,6 +21,11 @@ import { Route as VetRouteImport } from './routes/vet'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FormsRoute = FormsRouteImport.update({
+  id: '/forms',
+  path: '/forms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GroomRoute = GroomRouteImport.update({
@@ -55,6 +61,7 @@ const VetRoute = VetRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/forms': typeof FormsRoute
   '/groom': typeof GroomRoute
   '/login': typeof LoginRoute
   '/manager': typeof ManagerRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/forms': typeof FormsRoute
   '/groom': typeof GroomRoute
   '/login': typeof LoginRoute
   '/manager': typeof ManagerRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/forms': typeof FormsRoute
   '/groom': typeof GroomRoute
   '/login': typeof LoginRoute
   '/manager': typeof ManagerRoute
@@ -84,12 +93,28 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/groom' | '/login' | '/manager' | '/owner' | '/trainer' | '/vet'
+    | '/'
+    | '/forms'
+    | '/groom'
+    | '/login'
+    | '/manager'
+    | '/owner'
+    | '/trainer'
+    | '/vet'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/groom' | '/login' | '/manager' | '/owner' | '/trainer' | '/vet'
+  to:
+    | '/'
+    | '/forms'
+    | '/groom'
+    | '/login'
+    | '/manager'
+    | '/owner'
+    | '/trainer'
+    | '/vet'
   id:
     | '__root__'
     | '/'
+    | '/forms'
     | '/groom'
     | '/login'
     | '/manager'
@@ -100,6 +125,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FormsRoute: typeof FormsRoute
   GroomRoute: typeof GroomRoute
   LoginRoute: typeof LoginRoute
   ManagerRoute: typeof ManagerRoute
@@ -115,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forms': {
+      id: '/forms'
+      path: '/forms'
+      fullPath: '/forms'
+      preLoaderRoute: typeof FormsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/groom': {
@@ -164,6 +197,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FormsRoute: FormsRoute,
   GroomRoute: GroomRoute,
   LoginRoute: LoginRoute,
   ManagerRoute: ManagerRoute,
