@@ -1,14 +1,21 @@
 import { useState, type FormEvent } from "react";
 
 /**
- * Khung form nhập liệu: Xác nhận hoàn thành công việc chăm sóc
- * Dùng cho phân hệ Groom (Role: Groom)
- * Tương ứng API Backend: POST /api/groom/tasks/{id}/complete
- * DTO Backend: com.horsemanagement.dto.groom.CareTaskDto
+ * ============================================================================
+ * FILE: CareTaskForm.tsx
+ * MỤC ĐÍCH: 
+ *   - Khung form xác nhận hoàn thành công việc chăm sóc ngựa của Groom.
+ *   - Dành riêng cho phân hệ Nhân viên chuồng trại (Groom).
+ *   - Kết nối trực tiếp với API Backend: POST /api/groom/tasks/{id}/complete
+ *   - Nghiệp vụ: Cập nhật trường [Status] = 1 trong bảng dbo.CARETASK và ghi AuditLog.
+ *   - Khớp 100% với DTO Backend: com.horsemanagement.dto.groom.CareTaskDto
+ * ============================================================================
  */
+
+/** Dữ liệu gửi khi hoàn thành nhiệm vụ */
 export interface CareTaskCompleteData {
-  taskId: number;
-  note?: string;
+  taskId: number;  // Mã nhiệm vụ chăm sóc trong bảng dbo.CARETASK (Bắt buộc, > 0)
+  note?: string;   // Ghi chú thêm của Groom khi hoàn tất công việc
 }
 
 interface CareTaskFormProps {
@@ -21,6 +28,7 @@ export function CareTaskForm({ onCompleteTask, isLoading = false }: CareTaskForm
   const [note, setNote] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
 
+  /** Hàm xử lý xác nhận hoàn thành */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (onCompleteTask) {
@@ -42,6 +50,7 @@ export function CareTaskForm({ onCompleteTask, isLoading = false }: CareTaskForm
         </div>
       )}
 
+      {/* Ô nhập: Mã nhiệm vụ */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
           Mã nhiệm vụ chăm sóc (TaskID) <span className="text-red-500">*</span>
@@ -57,6 +66,7 @@ export function CareTaskForm({ onCompleteTask, isLoading = false }: CareTaskForm
         />
       </div>
 
+      {/* Ô nhập: Ghi chú */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
           Ghi chú thực hiện (tùy chọn)
@@ -70,6 +80,7 @@ export function CareTaskForm({ onCompleteTask, isLoading = false }: CareTaskForm
         />
       </div>
 
+      {/* Nút bấm xác nhận */}
       <div className="pt-2 flex justify-end">
         <button
           type="submit"

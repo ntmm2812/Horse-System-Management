@@ -1,24 +1,35 @@
 import { useState, type FormEvent } from "react";
 
 /**
- * Khung form nhập liệu: Vật tư & Điều chỉnh tồn kho
- * Dùng cho phân hệ Club Manager (Role: Admin)
- * Tương ứng API Backend: POST /api/manager/supplies, PATCH /api/manager/supplies/{id}/stock
- * DTO Backend: com.horsemanagement.dto.manager.Requests.SupplyInput / StockAdjustment
+ * ============================================================================
+ * FILE: SupplyInputForm.tsx
+ * MỤC ĐÍCH: 
+ *   - Khung form quản lý kho vật tư và thức ăn chuồng ngựa.
+ *   - Gồm 2 chức năng chính:
+ *       1. Thêm mới mặt hàng vật tư vào kho (POST /api/manager/supplies)
+ *       2. Điều chỉnh số lượng nhập/xuất kho (PATCH /api/manager/supplies/{id}/stock)
+ *   - Tích hợp cơ chế khóa lạc quan (Optimistic Locking) qua trường Version để chống
+ *     xung đột khi 2 người cùng nhập/xuất kho một lúc.
+ *   - Khớp DTO Backend: Requests.SupplyInput và Requests.StockAdjustment
+ * ============================================================================
  */
+
+/** Cấu trúc dữ liệu khi tạo mới vật tư */
 export interface SupplyFormData {
-  itemName: string;
-  type: string;
-  quantityInStock: number;
-  managedBy: number;
+  itemName: string;         // Tên vật tư (Thức ăn, Yên cương, Dược phẩm...)
+  type: string;             // Phân loại vật tư
+  quantityInStock: number;  // Số lượng tồn kho ban đầu (>= 0)
+  managedBy: number;        // ID người quản lý chịu trách nhiệm
 }
 
+/** Cấu trúc dữ liệu khi điều chỉnh tồn kho (Nhập/Xuất) */
 export interface StockAdjustmentData {
-  delta: number;
-  version: number;
-  reason: string;
+  delta: number;    // Số lượng thay đổi (dương: nhập thêm, âm: xuất kho)
+  version: number;  // Phiên bản version hiện tại trong DB để khóa lạc quan
+  reason: string;   // Lý do điều chỉnh (Nhập hàng định kỳ, Hỏng hóc...)
 }
 
+/** Props nhận từ component cha */
 interface SupplyInputFormProps {
   onAddSupply?: (data: SupplyFormData) => void | Promise<void>;
   onAdjustStock?: (data: StockAdjustmentData) => void | Promise<void>;
@@ -26,9 +37,10 @@ interface SupplyInputFormProps {
 }
 
 export function SupplyInputForm({ onAddSupply, onAdjustStock, isLoading = false }: SupplyInputFormProps) {
+  // Quản lý tab đang hiển thị: "create" (thêm mới) hoặc "adjust" (nhập/xuất kho)
   const [activeTab, setActiveTab] = useState<"create" | "adjust">("create");
 
-  // Form Thêm vật tư mới
+  // State dữ liệu form thêm mới
   const [supplyData, setSupplyData] = useState<SupplyFormData>({
     itemName: "",
     type: "Thức ăn",
@@ -36,7 +48,7 @@ export function SupplyInputForm({ onAddSupply, onAdjustStock, isLoading = false 
     managedBy: 1,
   });
 
-  // Form Điều chỉnh tồn kho (Nhập / Xuất)
+  // State dữ liệu form điều chỉnh tồn kho
   const [adjustData, setAdjustData] = useState<StockAdjustmentData>({
     delta: 10,
     version: 0,
@@ -45,6 +57,7 @@ export function SupplyInputForm({ onAddSupply, onAdjustStock, isLoading = false 
 
   const [message, setMessage] = useState<string | null>(null);
 
+  /** Xử lý submit thêm vật tư mới */
   const handleCreateSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (onAddSupply) {
@@ -53,6 +66,7 @@ export function SupplyInputForm({ onAddSupply, onAdjustStock, isLoading = false 
     }
   };
 
+  /** Xử lý submit điều chỉnh tồn kho */
   const handleAdjustSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (onAdjustStock) {
@@ -63,6 +77,7 @@ export function SupplyInputForm({ onAddSupply, onAdjustStock, isLoading = false 
 
   return (
     <div className="p-6 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4 max-w-xl">
+      {/* Header & Thanh chuyển Tab */}
       <div className="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 pb-3">
         <div>
           <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Khung nhập liệu: Kho Vật tư</h3>
@@ -92,7 +107,7 @@ export function SupplyInputForm({ onAddSupply, onAdjustStock, isLoading = false 
         </div>
       )}
 
-      {/* Tab 1: Tạo mới vật tư */}
+      {/* ===================== TAB 1: TẠO MỚI VẬT TƯ ===================== */}
       {activeTab === "create" ? (
         <form onSubmit={handleCreateSubmit} className="space-y-4">
           <div>
@@ -166,7 +181,7 @@ export function SupplyInputForm({ onAddSupply, onAdjustStock, isLoading = false 
           </div>
         </form>
       ) : (
-        /* Tab 2: Điều chỉnh tồn kho (Khóa lạc quan version) */
+        /* ===================== TAB 2: ĐIỀU CHỈNH TỒN KHO ===================== */
         <form onSubmit={handleAdjustSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>

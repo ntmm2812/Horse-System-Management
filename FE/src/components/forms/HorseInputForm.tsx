@@ -1,27 +1,37 @@
 import { useState, type FormEvent } from "react";
 
 /**
- * Khung form nhập liệu: Thêm mới hoặc Cập nhật hồ sơ Ngựa
- * Dùng cho phân hệ Club Manager (Role: Admin)
- * Tương ứng API Backend: POST /api/manager/horses, PUT /api/manager/horses/{id}
- * DTO Backend: com.horsemanagement.dto.manager.Requests.HorseInput
+ * ============================================================================
+ * FILE: HorseInputForm.tsx
+ * MỤC ĐÍCH: 
+ *   - Khung form nhập liệu cho việc "Thêm mới" hoặc "Chỉnh sửa" hồ sơ một chú ngựa.
+ *   - Dành riêng cho phân hệ Quản lý chuồng ngựa (Club Manager - Role: Admin).
+ *   - Kết nối trực tiếp với API Backend: 
+ *       + POST /api/manager/horses (Thêm ngựa mới)
+ *       + PUT /api/manager/horses/{id} (Cập nhật thông tin ngựa)
+ *   - Khớp 100% với DTO Backend: com.horsemanagement.dto.manager.Requests.HorseInput
+ * ============================================================================
  */
+
+/** Cấu trúc dữ liệu của Form Ngựa (Khớp các trường Backend yêu cầu) */
 export interface HorseFormData {
-  name: string;
-  gender: string;
-  age: number;
-  weight: number;
-  lineage: string;
-  ownerId: number;
+  name: string;      // Tên chú ngựa (Bắt buộc, tối đa 100 ký tự)
+  gender: string;    // Giới tính: Stallion (Ngựa đực giống), Mare (Ngựa cái), Gelding (Ngựa thiến)
+  age: number;       // Tuổi của ngựa (Số nguyên không âm >= 0)
+  weight: number;    // Cân nặng tính bằng kg (Thập phân > 0.01)
+  lineage: string;   // Dòng dõi, gia phả bố mẹ (Tối đa 255 ký tự)
+  ownerId: number;   // ID của chủ sở hữu (UserID của tài khoản Owner/Member)
 }
 
+/** Props truyền vào Form từ Component cha */
 interface HorseInputFormProps {
-  initialData?: Partial<HorseFormData>;
-  onSubmit?: (data: HorseFormData) => void | Promise<void>;
-  isLoading?: boolean;
+  initialData?: Partial<HorseFormData>;                      // Dữ liệu ban đầu (dùng khi mở form Sửa)
+  onSubmit?: (data: HorseFormData) => void | Promise<void>;  // Hàm xử lý gửi dữ liệu khi bấm Submit
+  isLoading?: boolean;                                       // Trạng thái đang tải / đang gọi API
 }
 
 export function HorseInputForm({ initialData, onSubmit, isLoading = false }: HorseInputFormProps) {
+  // State quản lý toàn bộ dữ liệu người dùng nhập trên form
   const [formData, setFormData] = useState<HorseFormData>({
     name: initialData?.name || "",
     gender: initialData?.gender || "Stallion",
@@ -31,8 +41,10 @@ export function HorseInputForm({ initialData, onSubmit, isLoading = false }: Hor
     ownerId: initialData?.ownerId ?? 1,
   });
 
+  // State hiển thị thông báo thành công hoặc lỗi
   const [message, setMessage] = useState<string | null>(null);
 
+  /** Hàm xử lý khi người dùng nhấn nút Lưu / Submit form */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (onSubmit) {
@@ -43,18 +55,20 @@ export function HorseInputForm({ initialData, onSubmit, isLoading = false }: Hor
 
   return (
     <form onSubmit={handleSubmit} className="p-6 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4 max-w-xl">
+      {/* Tiêu đề & Hướng dẫn */}
       <div>
         <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Khung nhập liệu: Hồ sơ Ngựa</h3>
         <p className="text-sm text-zinc-500">Nhập đầy đủ các trường thông tin theo quy chuẩn của Backend</p>
       </div>
 
+      {/* Thông báo kết quả gửi form */}
       {message && (
         <div className="p-3 text-sm text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-lg">
           {message}
         </div>
       )}
 
-      {/* Tên ngựa */}
+      {/* Ô nhập: Tên ngựa (name) */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
           Tên ngựa <span className="text-red-500">*</span>
@@ -70,7 +84,7 @@ export function HorseInputForm({ initialData, onSubmit, isLoading = false }: Hor
         />
       </div>
 
-      {/* Giới tính & Tuổi */}
+      {/* Hàng: Giới tính (gender) & Tuổi (age) */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
@@ -103,7 +117,7 @@ export function HorseInputForm({ initialData, onSubmit, isLoading = false }: Hor
         </div>
       </div>
 
-      {/* Cân nặng & Chủ sở hữu */}
+      {/* Hàng: Cân nặng (weight) & Mã chủ sở hữu (ownerId) */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
@@ -135,7 +149,7 @@ export function HorseInputForm({ initialData, onSubmit, isLoading = false }: Hor
         </div>
       </div>
 
-      {/* Dòng dõi / Gia phả */}
+      {/* Ô nhập: Dòng dõi / Gia phả (lineage) */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
           Dòng dõi / Gia phả (Lineage)
@@ -150,7 +164,7 @@ export function HorseInputForm({ initialData, onSubmit, isLoading = false }: Hor
         />
       </div>
 
-      {/* Nút gửi dữ liệu */}
+      {/* Nút gửi dữ liệu (Submit Button) */}
       <div className="pt-2 flex justify-end gap-3">
         <button
           type="submit"

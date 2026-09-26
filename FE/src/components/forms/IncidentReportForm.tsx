@@ -1,17 +1,26 @@
 import { useState, useRef, type FormEvent, type ChangeEvent } from "react";
 
 /**
- * Khung form nhập liệu: Báo cáo Sự cố & Tải ảnh đính kèm
- * Dùng cho phân hệ Nhân viên chuồng (Role: Groom)
- * Tương ứng API Backend: POST /api/groom/incidents, POST /api/groom/incidents/{id}/image
- * DTO Backend: com.horsemanagement.dto.groom.IncidentInput
+ * ============================================================================
+ * FILE: IncidentReportForm.tsx
+ * MỤC ĐÍCH: 
+ *   - Khung form báo cáo sự cố y tế hoặc chấn thương của ngựa kèm ảnh minh chứng.
+ *   - Dành riêng cho phân hệ Nhân viên chuồng trại (Groom).
+ *   - Kết nối trực tiếp với 2 API Backend: 
+ *       1. POST /api/groom/incidents (Tạo báo cáo sự cố dạng JSON)
+ *       2. POST /api/groom/incidents/{id}/image (Tải lên ảnh đính kèm dạng Multipart Form-Data)
+ *   - Ràng buộc bảo mật phía Client & Server: File ảnh PNG/JPEG, dung lượng <= 5MB.
+ *   - Khớp 100% với DTO Backend: com.horsemanagement.dto.groom.IncidentInput
+ * ============================================================================
  */
+
+/** Dữ liệu form báo cáo sự cố gửi lên Backend */
 export interface IncidentFormData {
-  horseId: number;
-  incidentType: string;
-  description: string;
-  date: string;
-  imageFile?: File;
+  horseId: number;          // ID chú ngựa gặp sự cố (Bắt buộc, > 0)
+  incidentType: string;     // Phân loại sự cố (Chấn thương móng, Bỏ ăn, Đau bụng, Sốt...)
+  description: string;      // Mô tả chi tiết triệu chứng (Tối đa 2000 ký tự)
+  date: string;             // Ngày xảy ra (Không được chọn ngày tương lai)
+  imageFile?: File;         // File ảnh chụp tại hiện trường (Tùy chọn, tối đa 5MB)
 }
 
 interface IncidentReportFormProps {
@@ -20,25 +29,30 @@ interface IncidentReportFormProps {
 }
 
 export function IncidentReportForm({ onSubmit, isLoading = false }: IncidentReportFormProps) {
+  // State quản lý dữ liệu form
   const [formData, setFormData] = useState<IncidentFormData>({
     horseId: 1,
-    incidentType: "Chấn thương nhẹ",
+    incidentType: "Chấn thương chân/móng",
     description: "",
     date: new Date().toISOString().split("T")[0],
   });
 
+  // State hiển thị ảnh xem trước (Preview)
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  /** Xử lý khi người dùng chọn file ảnh từ máy tính */
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Kiểm tra dung lượng tối đa 5MB theo yêu cầu của Backend
       if (file.size > 5 * 1024 * 1024) {
         alert("File ảnh không được vượt quá 5MB.");
         return;
       }
       setFormData((prev) => ({ ...prev, imageFile: file }));
+      // Đọc file để hiển thị preview ngay trên giao diện
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -47,6 +61,7 @@ export function IncidentReportForm({ onSubmit, isLoading = false }: IncidentRepo
     }
   };
 
+  /** Xử lý khi bấm nút gửi báo cáo */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (onSubmit) {
@@ -68,7 +83,7 @@ export function IncidentReportForm({ onSubmit, isLoading = false }: IncidentRepo
         </div>
       )}
 
-      {/* Mã ngựa & Ngày xảy ra */}
+      {/* Hàng: Mã ngựa & Ngày xảy ra */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
@@ -98,7 +113,7 @@ export function IncidentReportForm({ onSubmit, isLoading = false }: IncidentRepo
         </div>
       </div>
 
-      {/* Loại sự cố */}
+      {/* Dropdown: Phân loại sự cố */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
           Phân loại sự cố <span className="text-red-500">*</span>
@@ -117,7 +132,7 @@ export function IncidentReportForm({ onSubmit, isLoading = false }: IncidentRepo
         </select>
       </div>
 
-      {/* Mô tả chi tiết */}
+      {/* Ô nhập: Mô tả chi tiết */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
           Mô tả chi tiết triệu chứng & tình trạng
@@ -132,7 +147,7 @@ export function IncidentReportForm({ onSubmit, isLoading = false }: IncidentRepo
         />
       </div>
 
-      {/* Đính kèm ảnh */}
+      {/* Khung tải ảnh đính kèm */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
           Ảnh minh chứng sự cố (PNG / JPEG &le; 5MB)
@@ -157,6 +172,7 @@ export function IncidentReportForm({ onSubmit, isLoading = false }: IncidentRepo
           )}
         </div>
 
+        {/* Khung xem trước ảnh */}
         {imagePreview && (
           <div className="mt-3 relative w-36 h-28 rounded-lg overflow-hidden border border-zinc-300 dark:border-zinc-700">
             <img src={imagePreview} alt="Preview sự cố" className="w-full h-full object-cover" />
@@ -164,6 +180,7 @@ export function IncidentReportForm({ onSubmit, isLoading = false }: IncidentRepo
               type="button"
               onClick={() => { setImagePreview(null); setFormData((prev) => ({ ...prev, imageFile: undefined })); }}
               className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 text-xs"
+              title="Xóa ảnh"
             >
               &times;
             </button>
@@ -171,6 +188,7 @@ export function IncidentReportForm({ onSubmit, isLoading = false }: IncidentRepo
         )}
       </div>
 
+      {/* Nút gửi báo cáo */}
       <div className="pt-2 flex justify-end">
         <button
           type="submit"

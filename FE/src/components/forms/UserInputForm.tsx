@@ -1,16 +1,22 @@
 import { useState, type FormEvent } from "react";
 
 /**
- * Khung form nhập liệu: Tạo tài khoản nhân sự & Phân quyền
- * Dùng cho phân hệ Club Manager (Role: Admin)
- * Tương ứng API Backend: POST /api/manager/users, POST /api/manager/users/{id}/approve
- * DTO Backend: com.horsemanagement.dto.manager.Requests.UserInput / Approval
+ * ============================================================================
+ * FILE: UserInputForm.tsx
+ * MỤC ĐÍCH: 
+ *   - Khung form tạo tài khoản người dùng mới và phân quyền vai trò ban đầu.
+ *   - Dành cho phân hệ Club Manager (Role: Admin) để tạo nhân sự (Groom, Trainer, Vet...).
+ *   - Kết nối trực tiếp với API Backend: POST /api/manager/users
+ *   - Khớp 100% với DTO Backend: com.horsemanagement.dto.manager.Requests.UserInput
+ * ============================================================================
  */
+
+/** Dữ liệu form người dùng gửi lên Backend */
 export interface UserFormData {
-  fullName: string;
-  email: string;
-  password: string;
-  roleId: number;
+  fullName: string;  // Họ và tên (Bắt buộc, tối đa 100 ký tự)
+  email: string;     // Email đăng nhập (Bắt buộc, chuẩn định dạng email, tối đa 254 ký tự)
+  password: string;  // Mật khẩu khởi tạo (Bắt buộc, từ 10 đến 72 ký tự)
+  roleId: number;    // ID vai trò trong hệ thống (1: Admin, 2: Groom, 3: Trainer, 4: Vet, 5: Member)
 }
 
 interface UserInputFormProps {
@@ -19,15 +25,17 @@ interface UserInputFormProps {
 }
 
 export function UserInputForm({ onCreateUser, isLoading = false }: UserInputFormProps) {
+  // State lưu trữ dữ liệu form
   const [userData, setUserData] = useState<UserFormData>({
     fullName: "",
     email: "",
     password: "",
-    roleId: 2, // 1: Admin, 2: Groom, 3: Trainer, 4: Vet, 5: Member/Owner
+    roleId: 2, // Mặc định chọn tạo nhân viên Groom
   });
 
   const [message, setMessage] = useState<string | null>(null);
 
+  /** Hàm xử lý gửi form tạo tài khoản */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (onCreateUser) {
@@ -49,7 +57,7 @@ export function UserInputForm({ onCreateUser, isLoading = false }: UserInputForm
         </div>
       )}
 
-      {/* Họ và tên */}
+      {/* Ô nhập: Họ và tên */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
           Họ và tên <span className="text-red-500">*</span>
@@ -65,7 +73,7 @@ export function UserInputForm({ onCreateUser, isLoading = false }: UserInputForm
         />
       </div>
 
-      {/* Email */}
+      {/* Ô nhập: Email */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
           Địa chỉ Email đăng nhập <span className="text-red-500">*</span>
@@ -81,7 +89,7 @@ export function UserInputForm({ onCreateUser, isLoading = false }: UserInputForm
         />
       </div>
 
-      {/* Mật khẩu khởi tạo */}
+      {/* Ô nhập: Mật khẩu khởi tạo */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
           Mật khẩu ban đầu (10 - 72 ký tự) <span className="text-red-500">*</span>
@@ -98,7 +106,7 @@ export function UserInputForm({ onCreateUser, isLoading = false }: UserInputForm
         />
       </div>
 
-      {/* Vai trò */}
+      {/* Dropdown chọn: Vai trò hệ thống (Role) */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
           Vai trò hệ thống (Role) <span className="text-red-500">*</span>
@@ -116,6 +124,7 @@ export function UserInputForm({ onCreateUser, isLoading = false }: UserInputForm
         </select>
       </div>
 
+      {/* Nút gửi form */}
       <div className="pt-2 flex justify-end">
         <button
           type="submit"

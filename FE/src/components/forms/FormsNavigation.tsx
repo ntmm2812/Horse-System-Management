@@ -7,16 +7,26 @@ import { IncidentReportForm, type IncidentFormData } from "./IncidentReportForm"
 import { CareTaskForm, type CareTaskCompleteData } from "./CareTaskForm";
 
 /**
- * File điều hướng trung tâm kết nối toàn bộ các khung nhập liệu của Club Manager và Groom:
- * - Cho phép chuyển đổi linh hoạt giữa các biểu mẫu nhập liệu
- * - Hiển thị API Endpoint tương ứng và Payload JSON xem trước
- * - Hỗ trợ đội Frontend lấy form này để ráp vào trang hoặc gắn CSS
+ * ============================================================================
+ * FILE: FormsNavigation.tsx
+ * MỤC ĐÍCH:
+ *   - File ĐIỀU HƯỚNG TRUNG TÂM (Navigation Hub) kết nối toàn bộ các khung nhập liệu.
+ *   - Cho phép người dùng / đội Frontend / Giảng viên dễ dàng chuyển đổi qua lại
+ *     giữa các biểu mẫu của Club Manager và Groom.
+ *   - Tích hợp "Khung xem trước Payload": khi người dùng nhập bất kỳ form nào và bấm
+ *     Submit, hệ thống sẽ hiển thị trực quan cấu trúc JSON, HTTP Method và Endpoint
+ *     sẽ được gửi tới Backend Spring Boot.
+ *   - Cung cấp tài liệu sống động và khung test thực tế cho đồ án SWP391.
+ * ============================================================================
  */
+
 export function FormsNavigation() {
+  // State điều hướng: lưu form hiện tại đang được chọn hiển thị
   const [activeForm, setActiveForm] = useState<
     "horse" | "supply" | "user" | "finance" | "incident" | "careTask"
   >("horse");
 
+  // State lưu lịch sử payload gửi đi để người dùng kiểm tra JSON
   const [apiLog, setApiLog] = useState<{
     endpoint: string;
     method: string;
@@ -24,7 +34,7 @@ export function FormsNavigation() {
     timestamp: string;
   } | null>(null);
 
-  // Xử lý khi submit từng form: ghi log và gọi thử backend nếu có token
+  /** Hàm bắt sự kiện submit Form Ngựa */
   const handleHorseSubmit = (data: HorseFormData) => {
     setApiLog({
       endpoint: "/api/manager/horses",
@@ -34,6 +44,7 @@ export function FormsNavigation() {
     });
   };
 
+  /** Hàm bắt sự kiện submit Form Thêm vật tư */
   const handleSupplySubmit = (data: SupplyFormData) => {
     setApiLog({
       endpoint: "/api/manager/supplies",
@@ -43,6 +54,7 @@ export function FormsNavigation() {
     });
   };
 
+  /** Hàm bắt sự kiện submit Form Điều chỉnh tồn kho */
   const handleStockAdjust = (data: StockAdjustmentData) => {
     setApiLog({
       endpoint: "/api/manager/supplies/{id}/stock",
@@ -52,6 +64,7 @@ export function FormsNavigation() {
     });
   };
 
+  /** Hàm bắt sự kiện submit Form Tạo nhân sự */
   const handleUserSubmit = (data: UserFormData) => {
     setApiLog({
       endpoint: "/api/manager/users",
@@ -61,6 +74,7 @@ export function FormsNavigation() {
     });
   };
 
+  /** Hàm bắt sự kiện submit Form Thu/Chi tài chính */
   const handleFinanceSubmit = (data: FinanceFormData) => {
     setApiLog({
       endpoint: "/api/manager/reports/finance/entries",
@@ -70,6 +84,7 @@ export function FormsNavigation() {
     });
   };
 
+  /** Hàm bắt sự kiện submit Form Báo cáo sự cố */
   const handleIncidentSubmit = (data: IncidentFormData) => {
     setApiLog({
       endpoint: "/api/groom/incidents (và upload ảnh tới /api/groom/incidents/{id}/image)",
@@ -85,6 +100,7 @@ export function FormsNavigation() {
     });
   };
 
+  /** Hàm bắt sự kiện submit Form Hoàn thành công việc Groom */
   const handleCareTaskSubmit = (data: CareTaskCompleteData) => {
     setApiLog({
       endpoint: `/api/groom/tasks/${data.taskId}/complete`,
@@ -96,7 +112,7 @@ export function FormsNavigation() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6 font-sans">
-      {/* Header Điều hướng */}
+      {/* ===================== THANH ĐIỀU HƯỚNG CHÍNH ===================== */}
       <div className="border-b border-zinc-200 dark:border-zinc-800 pb-4">
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
           Trung tâm Điều hướng & Khung nhập liệu (SWP391)
@@ -105,8 +121,9 @@ export function FormsNavigation() {
           Tập hợp các biểu mẫu nhập thông tin chuẩn xác cho 2 phân hệ trọng tâm: <strong>Club Manager (Quản lý)</strong> và <strong>Groom (Chăm sóc ngựa)</strong>.
         </p>
 
-        {/* Thanh Menu điều hướng chọn Form */}
+        {/* Các nút bấm điều hướng chọn Form */}
         <div className="mt-4 flex flex-wrap gap-2">
+          {/* Nhóm điều hướng Club Manager */}
           <span className="text-xs uppercase font-bold tracking-wider text-zinc-400 self-center mr-2">Manager:</span>
           <button
             onClick={() => setActiveForm("horse")}
@@ -149,6 +166,7 @@ export function FormsNavigation() {
             Bút toán Thu/Chi
           </button>
 
+          {/* Nhóm điều hướng Groom */}
           <span className="text-xs uppercase font-bold tracking-wider text-zinc-400 self-center ml-4 mr-2">Groom:</span>
           <button
             onClick={() => setActiveForm("incident")}
@@ -173,9 +191,9 @@ export function FormsNavigation() {
         </div>
       </div>
 
-      {/* Vùng hiển thị Form & Khung kiểm tra dữ liệu */}
+      {/* ===================== KHU VỰC HIỂN THỊ FORM & XEM TRƯỚC ===================== */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Cột 1 & 2: Khung Form nhập liệu */}
+        {/* Cột 1 & 2: Hiển thị Khung Form tương ứng theo tab đang chọn */}
         <div className="lg:col-span-2">
           {activeForm === "horse" && <HorseInputForm onSubmit={handleHorseSubmit} />}
           {activeForm === "supply" && (
@@ -187,7 +205,7 @@ export function FormsNavigation() {
           {activeForm === "careTask" && <CareTaskForm onCompleteTask={handleCareTaskSubmit} />}
         </div>
 
-        {/* Cột 3: Khung kiểm tra Payload & Kết nối Backend */}
+        {/* Cột 3: Khung kiểm tra Payload JSON & API Endpoint tương ứng */}
         <div className="bg-zinc-900 text-zinc-100 p-5 rounded-xl border border-zinc-800 space-y-4">
           <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
             <h4 className="text-sm font-bold text-amber-400">Kiểm tra Payload gửi Backend</h4>
@@ -219,14 +237,17 @@ export function FormsNavigation() {
             </div>
           )}
 
+          {/* Hướng dẫn tái sử dụng cho đội FE */}
           <div className="pt-3 border-t border-zinc-800 text-xs text-zinc-400 space-y-1">
-            <p>💡 <strong>Gợi ý cho đội FE:</strong></p>
-            <p>1. Có thể nhúng trực tiếp component <code>FormsNavigation</code> vào giao diện.</p>
-            <p>2. Hoặc import riêng từng Form từ thư mục <code>FE/src/components/forms/</code>.</p>
+            <p>💡 <strong>Hướng dẫn cho đội FE:</strong></p>
+            <p>1. Có thể import và dùng trực tiếp: <code>&lt;FormsNavigation /&gt;</code>.</p>
+            <p>2. Hoặc import riêng từng Form từ <code>FE/src/components/forms/</code>.</p>
+            <p>3. Các trường input và validation đã chuẩn 100% với DTO của Backend Spring Boot.</p>
           </div>
         </div>
       </div>
     </div>
   );
 }
+
 export default FormsNavigation;

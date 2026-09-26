@@ -1,18 +1,24 @@
 import { useState, type FormEvent } from "react";
 
 /**
- * Khung form nhập liệu: Bút toán Tài chính (Thu / Chi)
- * Dùng cho phân hệ Club Manager (Role: Admin)
- * Tương ứng API Backend: POST /api/manager/reports/finance/entries
- * DTO Backend: com.horsemanagement.dto.manager.Requests.FinanceInput
+ * ============================================================================
+ * FILE: FinanceInputForm.tsx
+ * MỤC ĐÍCH: 
+ *   - Khung form ghi nhận các bút toán tài chính (Khoản thu doanh thu hoặc Khoản chi chi phí).
+ *   - Dành cho phân hệ Club Manager (Role: Admin) để theo dõi dòng tiền CLB.
+ *   - Kết nối trực tiếp với API Backend: POST /api/manager/reports/finance/entries
+ *   - Khớp 100% với DTO Backend: com.horsemanagement.dto.manager.Requests.FinanceInput
+ * ============================================================================
  */
+
+/** Dữ liệu bút toán tài chính gửi lên Backend */
 export interface FinanceFormData {
-  horseId?: number;
-  entryType: "INCOME" | "EXPENSE";
-  amount: number;
-  category: string;
-  description: string;
-  entryDate: string;
+  horseId?: number;                     // ID chú ngựa liên quan (Không bắt buộc)
+  entryType: "INCOME" | "EXPENSE";      // Loại: INCOME (Khoản Thu) hoặc EXPENSE (Khoản Chi)
+  amount: number;                       // Số tiền giao dịch tính bằng VNĐ (> 0)
+  category: string;                     // Danh mục (Thức ăn, Thuốc thú y, Phí chuồng, Phí huấn luyện...)
+  description: string;                  // Ghi chú chi tiết hóa đơn/chứng từ
+  entryDate: string;                    // Ngày phát sinh giao dịch (YYYY-MM-DD, không được ở tương lai)
 }
 
 interface FinanceInputFormProps {
@@ -21,6 +27,7 @@ interface FinanceInputFormProps {
 }
 
 export function FinanceInputForm({ onSubmit, isLoading = false }: FinanceInputFormProps) {
+  // State lưu dữ liệu form thu chi
   const [formData, setFormData] = useState<FinanceFormData>({
     entryType: "EXPENSE",
     amount: 1500000,
@@ -31,6 +38,7 @@ export function FinanceInputForm({ onSubmit, isLoading = false }: FinanceInputFo
 
   const [message, setMessage] = useState<string | null>(null);
 
+  /** Hàm xử lý submit lưu bút toán */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (onSubmit) {
@@ -52,7 +60,7 @@ export function FinanceInputForm({ onSubmit, isLoading = false }: FinanceInputFo
         </div>
       )}
 
-      {/* Loại giao dịch */}
+      {/* Hàng: Loại giao dịch & Số tiền */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
@@ -84,7 +92,7 @@ export function FinanceInputForm({ onSubmit, isLoading = false }: FinanceInputFo
         </div>
       </div>
 
-      {/* Danh mục & Ngày */}
+      {/* Hàng: Danh mục & Ngày ghi nhận */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
@@ -115,7 +123,7 @@ export function FinanceInputForm({ onSubmit, isLoading = false }: FinanceInputFo
         </div>
       </div>
 
-      {/* Liên kết chú ngựa (tùy chọn) */}
+      {/* Ô nhập: Liên kết chú ngựa (tùy chọn) */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
           Mã ngựa liên quan (HorseID - Không bắt buộc)
@@ -130,7 +138,7 @@ export function FinanceInputForm({ onSubmit, isLoading = false }: FinanceInputFo
         />
       </div>
 
-      {/* Diễn giải chi tiết */}
+      {/* Ô nhập: Diễn giải chi tiết */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
           Diễn giải chi tiết
@@ -145,6 +153,7 @@ export function FinanceInputForm({ onSubmit, isLoading = false }: FinanceInputFo
         />
       </div>
 
+      {/* Nút gửi form */}
       <div className="pt-2 flex justify-end">
         <button
           type="submit"
