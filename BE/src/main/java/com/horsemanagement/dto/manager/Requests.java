@@ -206,4 +206,58 @@ public final class Requests {
         @PastOrPresent(message = "Ngày ghi nhận không thể ở tương lai")
         LocalDate entryDate
     ) {}
+
+    // ============================================================
+    // QUẢN LÝ CUỘC ĐUA & KẾT QUẢ THI ĐẤU
+    // ============================================================
+
+    /**
+     * Tạo mới hoặc cập nhật thông tin một cuộc đua.
+     * Dùng cho: POST /api/manager/races  &  PUT /api/manager/races/{id}
+     */
+    public record RaceInput(
+        @NotBlank(message = "Tên cuộc đua không được để trống")
+        @Size(max = 150)
+        String raceName,                        // Tên cuộc đua (bắt buộc)
+
+        @NotNull(message = "Ngày thi đấu không được để trống")
+        LocalDate date,                         // Ngày tổ chức
+
+        @NotNull(message = "Giờ thi đấu không được để trống")
+        java.time.LocalTime time,               // Giờ xuất phát
+
+        @Size(max = 200)
+        String venue,                           // Địa điểm (tùy chọn)
+
+        @Min(value = 1, message = "Cự ly phải lớn hơn 0")
+        Integer distanceMeters                  // Cự ly đua theo mét (tùy chọn)
+    ) {}
+
+    /**
+     * Đăng ký ngựa tham gia cuộc đua.
+     * Dùng cho: POST /api/manager/races/{raceId}/registrations
+     */
+    public record RaceRegistrationInput(
+        @NotNull(message = "HorseID không được để trống")
+        Integer horseId                         // ID ngựa đăng ký
+    ) {}
+
+    /**
+     * Nhập / Cập nhật kết quả thi đấu của 1 ngựa trong 1 cuộc đua.
+     * Dùng cho: PUT /api/manager/races/{raceId}/results/{horseId}
+     */
+    public record RaceResultInput(
+        @NotNull(message = "Vị trí xếp hạng không được để trống")
+        @Min(value = 1, message = "Vị trí phải >= 1")
+        Integer position,                       // Vị trí về đích (1 = nhất)
+
+        @Pattern(regexp = "\\d{2}:\\d{2}\\.\\d{3}",
+                 message = "Thời gian phải theo định dạng mm:ss.sss (VD: 02:35.420)")
+        String finishTime,                      // Thời gian về đích (tùy chọn)
+
+        @DecimalMin(value = "0", inclusive = true, message = "Tiền thưởng không thể âm")
+        @Digits(integer = 14, fraction = 2)
+        java.math.BigDecimal prizeMoney         // Tiền thưởng VNĐ (tùy chọn)
+    ) {}
 }
+

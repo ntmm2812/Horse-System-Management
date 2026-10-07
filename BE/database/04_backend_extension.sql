@@ -58,6 +58,31 @@ BEGIN TRY
     WHERE (r.RoleName=N'Admin' OR (r.RoleName=N'Groom' AND p.PermissionName IN
         (N'VIEW_STABLE',N'VIEW_FEEDING',N'COMPLETE_CARE',N'REPORT_INCIDENT',N'VIEW_SUPPLIES')))
         AND NOT EXISTS (SELECT 1 FROM dbo.ROLEPERMISSION t WHERE t.RoleID=r.RoleID AND t.PermissionID=p.PermissionID);
+    -- ============================================================
+    -- KẾT QUẢ THI ĐẤU — lưu trong RACEREGISTRATION (1 dòng = 1 ngựa tham gia 1 cuộc đua)
+    -- Position    : vị trí xếp hạng (1 = nhất), NULL = chưa có kết quả
+    -- FinishTime  : thời gian về đích dạng 'mm:ss.sss'
+    -- PrizeMoney  : tiền thưởng (VNĐ), NULL = không được thưởng
+    -- ============================================================
+    IF COL_LENGTH('dbo.RACEREGISTRATION','Position') IS NULL
+        ALTER TABLE dbo.RACEREGISTRATION ADD [Position] INT NULL
+            CONSTRAINT CK_RACEREGISTRATION_Position CHECK ([Position] IS NULL OR [Position] >= 1);
+    IF COL_LENGTH('dbo.RACEREGISTRATION','FinishTime') IS NULL
+        ALTER TABLE dbo.RACEREGISTRATION ADD FinishTime VARCHAR(12) NULL;   -- 'mm:ss.sss'
+    IF COL_LENGTH('dbo.RACEREGISTRATION','PrizeMoney') IS NULL
+        ALTER TABLE dbo.RACEREGISTRATION ADD PrizeMoney DECIMAL(18,2) NULL
+            CONSTRAINT CK_RACEREGISTRATION_Prize CHECK (PrizeMoney IS NULL OR PrizeMoney >= 0);
+
+    -- Mở rộng bảng RACE: thêm địa điểm và cự ly đua
+    IF COL_LENGTH('dbo.RACE','Venue') IS NULL
+        ALTER TABLE dbo.RACE ADD Venue NVARCHAR(200) NULL;
+    IF COL_LENGTH('dbo.RACE','DistanceMeters') IS NULL
+        ALTER TABLE dbo.RACE ADD DistanceMeters INT NULL
+            CONSTRAINT CK_RACE_Distance CHECK (DistanceMeters IS NULL OR DistanceMeters > 0);
+
+    -- Thêm quyền quản lý cuộc đua cho role Admin
+    INSERT @permissions VALUES (N'MANAGE_RACES');
+
     COMMIT;
 END TRY
 BEGIN CATCH

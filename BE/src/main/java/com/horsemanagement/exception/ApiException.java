@@ -29,6 +29,20 @@ public class ApiException extends RuntimeException {
     }
 
     /**
+     * Tạo nhanh ngoại lệ 404 Not Found kèm thông báo cụ thể.
+     */
+    public static ApiException notFound(String message) {
+        return new ApiException(404, message);
+    }
+
+    /**
+     * Tạo nhanh ngoại lệ 400 Bad Request (Dữ liệu đầu vào không hợp lệ).
+     */
+    public static ApiException badRequest(String message) {
+        return new ApiException(400, message);
+    }
+
+    /**
      * Tạo nhanh ngoại lệ 409 Conflict (Xung đột dữ liệu / Đã tồn tại).
      */
     public static ApiException conflict(String message) {
