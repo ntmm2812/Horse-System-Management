@@ -1,22 +1,29 @@
 package com.horsemanagement.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.CreationTimestamp;
-import java.time.LocalDateTime;
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "horses", uniqueConstraints = {
-    @UniqueConstraint(name = "uq_horse_stall", columnNames = "stall_id"),
-    @UniqueConstraint(name = "uq_horse_registration", columnNames = "registration_no"),
-    @UniqueConstraint(name = "uq_horse_microchip", columnNames = "microchip_no")
-})
+@Table(name = "horses", schema = "dbo")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,14 +34,15 @@ public class Horse {
     private Integer horseId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "owner_id", nullable = false, foreignKey = @ForeignKey(name = "fk_horse_owner"))
+    @JoinColumn(name = "owner_id", nullable = false,
+        foreignKey = @ForeignKey(name = "fk_horse_owner"))
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id", nullable = true, foreignKey = @ForeignKey(name = "fk_horse_manager"))
+    @JoinColumn(name = "manager_id", foreignKey = @ForeignKey(name = "fk_horse_manager"))
     private User manager;
 
-    // Existing FK to stalls.stall_id. Stall entity is outside Phase 1.
+    // Existing FK to stalls; Stall is outside Phase 1.
     @Column(name = "stall_id")
     private Integer stallId;
 

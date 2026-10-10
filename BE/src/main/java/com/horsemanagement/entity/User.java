@@ -1,17 +1,29 @@
 package com.horsemanagement.entity;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.CreationTimestamp;
-import java.time.LocalDateTime;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {
+@Table(name = "users", schema = "dbo", uniqueConstraints = {
     @UniqueConstraint(name = "uq_users_username", columnNames = "username"),
     @UniqueConstraint(name = "uq_users_email", columnNames = "email")
 })
@@ -25,15 +37,16 @@ public class User {
     private Integer userId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "role_id", nullable = false, foreignKey = @ForeignKey(name = "fk_users_role"))
+    @JoinColumn(name = "role_id", nullable = false,
+        foreignKey = @ForeignKey(name = "fk_users_role"))
     private Role role;
 
     @Nationalized
     @Column(name = "username", length = 50, nullable = false)
     private String username;
 
-    @Nationalized
     @JsonIgnore
+    @Nationalized
     @Column(name = "password_hash", length = 255, nullable = false)
     private String passwordHash;
 

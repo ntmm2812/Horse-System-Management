@@ -1,15 +1,22 @@
 package com.horsemanagement.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.CreationTimestamp;
-import java.time.LocalDateTime;
+import org.hibernate.annotations.Nationalized;
 
 @Entity
-@Table(name = "roles", uniqueConstraints = @UniqueConstraint(name = "uq_roles_code", columnNames = "role_code"))
+@Table(name = "roles", schema = "dbo", uniqueConstraints =
+    @UniqueConstraint(name = "uq_roles_code", columnNames = "role_code"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -34,5 +41,4 @@ public class Role {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "datetime2")
     private LocalDateTime createdAt;
-
 }

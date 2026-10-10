@@ -61,10 +61,13 @@ class EnvironmentConfigurationTest {
     }
 
     @Test
-    void missingOptionalFileAllowsEnvironmentOnlyConfiguration() {
+    void environmentVariablesOverrideLocalFileWhenOptionalImportIsMissing() {
         var environment = load("optional:"
             + temporaryDirectory.resolve("missing.env").toUri() + "[.properties]",
-            Map.of("DB_USERNAME", "fixture_user", "DB_PASSWORD", "fixture-only-value"));
+            Map.of("DB_HOST", "localhost", "DB_PORT", "1433",
+                "DB_NAME", "horse_management", "DB_ENCRYPT", "true",
+                "DB_TRUST_SERVER_CERTIFICATE", "true",
+                "DB_USERNAME", "fixture_user", "DB_PASSWORD", "fixture-only-value"));
         assertThat(environment.getProperty("spring.datasource.url")).isEqualTo(
             "jdbc:sqlserver://localhost:1433;databaseName=horse_management;"
             + "encrypt=true;trustServerCertificate=true");
