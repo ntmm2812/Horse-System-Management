@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/veterinarian/injuries")
 @Validated
-@Tag(name = "Veterinarian")
+@Tag(name = "Veterinarian - Injuries & Recovery")
 public class VeterinarianInjuryController {
     private final VeterinarianInjuryService service;
 

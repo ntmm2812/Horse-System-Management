@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/veterinarian/horses")
 @Validated
-@Tag(name = "Veterinarian", description = "Horse health overview and medical records; authorization is not implemented yet")
+@Tag(name = "Veterinarian - Horse Health", description = "Horse health overview and metric history; authorization is not implemented yet")
 public class VeterinarianHorseController {
     private final VeterinarianHorseService service;
 
